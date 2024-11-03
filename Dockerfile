@@ -10,7 +10,7 @@ WORKDIR /test-confidential
 RUN uv sync --frozen
 
 # Allow workload operator to override env variables
-LABEL "tee.launch_policy.allow_env_override"="NONCE,AUDIENCE,TOKEN_TYPE"
+LABEL "tee.launch_policy.allow_env_override"="NONCE,AUDIENCE"
 
 # Define the entrypoint
 ENTRYPOINT ["uv", "run", "attestation.py"]
