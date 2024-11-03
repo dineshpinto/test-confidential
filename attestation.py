@@ -45,28 +45,30 @@ class AttestationInterface(HTTPConnection):
     ) -> str:
         """Fetch an attestation token with custom nonce and audience."""
         headers = {"Content-Type": "application/json"}
+        body = {"audience": audience, "token_type": token_type}
         if nonces:
-            body = json.dumps(
-                {"audience": audience, "token_type": token_type, "nonces": nonces}
-            )
-        else:
-            body = json.dumps(
-                {"audience": audience, "token_type": token_type}
-            )
-        token_bytes = self._post("/v1/token", body=body, headers=headers)
+            body["nonces"] = nonces
+
+        token_bytes = self._post("/v1/token", body=json.dumps(body), headers=headers)
         token = token_bytes.decode()
-        logger.info("Token %s", token)
         return token
 
 
 if __name__ == "__main__":
     nonces = [os.getenv("NONCE", default=None)]
     audience = os.getenv("AUDIENCE", default="https://sts.google.com")
-    token_type = os.getenv("TOKEN_TYPE", default="OIDC")
 
     attestation = AttestationInterface()
-    attestation.get_token(
+    oidc_token = attestation.get_token(
         nonces=nonces, 
         audience=audience, 
-        token_type=token_type
+        token_type="OIDC"
     )
+    logger.info("OIDC %s", oidc_token)
+
+    pki_token = attestation.get_token(
+        nonces=nonces, 
+        audience=audience, 
+        token_type="PKI"
+    )    
+    logger.info("PKI %s", pki_token)
