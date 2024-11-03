@@ -5,6 +5,7 @@ import socket
 from http.client import HTTPConnection
 from typing import override
 
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
